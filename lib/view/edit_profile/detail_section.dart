@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:leadingmanagementsystem/controller/profile_controller.dart';
+import 'package:leadingmanagementsystem/utils/colors.dart';
 import 'package:leadingmanagementsystem/utils/textstyles.dart';
 
 import '../../allpackages.dart';
@@ -255,6 +256,7 @@ class _DetailsSectionState extends State<DetailsSection> {
                                         fontWeight: FontWeight.w500)),
                               ),
                               SmallActionButton(
+                                
                                 press: () async {
                                   print('clickkk');
                                   

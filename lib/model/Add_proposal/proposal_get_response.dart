@@ -42,6 +42,7 @@ class ProposalGetModel {
 
 class Datum {
     String proposalid;
+     String leadid;
     String number;
     String subject;
     String total;
@@ -62,6 +63,7 @@ class Datum {
         required this.datecreated,
         required this.status,
         required this.edit,
+        required this.leadid,
         required this.viewlink,
     });
 
@@ -76,6 +78,7 @@ class Datum {
         status: json["status"],
         edit: json["edit"],
         viewlink: json["viewlink"],
+        leadid: json['leadid']
     );
 
     Map<String, dynamic> toJson() => {
@@ -89,5 +92,6 @@ class Datum {
         "status": status,
         "edit": edit,
         "viewlink": viewlink,
+        "leadid":leadid
     };
 }

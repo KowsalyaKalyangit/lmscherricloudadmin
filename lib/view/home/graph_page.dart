@@ -40,7 +40,7 @@ class _BarChartExampleState extends State<BarChartExample> {
         );
       } else if (graphController.getnotification.isEmpty) {
         return Center(
-          child: Text('AUCUNE DONNÉE DISPONIBLE '),
+          child: Text('No data found '),
         );
       } else {
         return Column(

@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:leadingmanagementsystem/allpackages.dart';
-import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_load_amt_controller.dart';
+//import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_load_amt_controller.dart';
 import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_load_controller.dart';
 import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_open_controller.dart';
 import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_speed_amount_controller.dart';
@@ -9,20 +11,41 @@ import 'package:leadingmanagementsystem/utils/textstyles.dart';
 
 import '../../controller/add_proposal_controller/add_item_proposal_controller.dart';
 import '../../controller/add_proposal_controller/get_addlistitem_controller.dart';
+import '../../controller/add_proposal_controller/get_tax_controller.dart';
 import '../../controller/add_proposal_controller/proposal_control_controller.dart';
 import '../../controller/add_proposal_controller/proposal_create_controller.dart';
+import '../../controller/add_proposal_controller/proposal_delivery_erection_controller.dart';
 import '../../controller/add_proposal_controller/proposal_machine_controller.dart';
-import '../../controller/add_proposal_controller/proposal_operationamt_controller.dart';
+
+import '../../controller/add_proposal_controller/proposal_operation_amt_controller.dart';
 import '../../controller/add_proposal_controller/proposal_operation_controller.dart';
 import '../../controller/add_proposal_controller/proposal_speed_controller.dart';
+import '../../controller/add_proposal_controller/proposal_tax_controller.dart';
 import '../../controller/add_proposal_controller/proposal_travel_amt_controller.dart';
 import '../../controller/add_proposal_controller/proposal_travel_controller.dart';
 import '../../utils/common_variable.dart';
 import 'proposal_next_next.dart';
 
+List<String> fruits = ['Apple', 'Banana', 'Graps', 'Orange', 'Mango'];
+List<String> selectedFruits = [];
+
 class ProposalNextPage extends StatefulWidget {
-  const ProposalNextPage({super.key,this.id,this.subjectname,this.opentillname,this.datename,this.proposaltoname,
-  this.countryname,this.zipname,this.statename,this.emailname,this.phonename,this.status,this.cityname,this.addressname,this.currencyname});
+  const ProposalNextPage(
+      {super.key,
+      this.id,
+      this.subjectname,
+      this.opentillname,
+      this.datename,
+      this.proposaltoname,
+      this.countryname,
+      this.zipname,
+      this.statename,
+      this.emailname,
+      this.phonename,
+      this.status,
+      this.cityname,
+      this.addressname,
+      this.currencyname});
   final String? id;
   final String? subjectname;
   final String? opentillname;
@@ -37,6 +60,7 @@ class ProposalNextPage extends StatefulWidget {
   final String? phonename;
   final String? status;
   final String? currencyname;
+
 
   @override
   State<ProposalNextPage> createState() => _ProposalNextPageState();
@@ -65,21 +89,32 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
       Get.put(ProposalMachineController());
   ProposalSpeedAmtController proposalSpeedAmtController =
       Get.put(ProposalSpeedAmtController());
-  ProposalLoadAmtController proposalLoadAmtController =
-      Get.put(ProposalLoadAmtController());
-      
+
   ProposalTravelAmtController proposalTravelAmtController =
       Get.put(ProposalTravelAmtController());
 
-  
   ProposalCreateController proposalCreateController =
       Get.put(ProposalCreateController());
+  ProposalOperationAmtController proposalOperationAmtController =
+      Get.put(ProposalOperationAmtController());
+
+  ProposalTaxController proposalTaxController =
+      Get.put(ProposalTaxController());
+  var selectedOptions = [];
+  // List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+  ProposalTaxDrpDwnController proposalTaxdrpdownController =
+      Get.put(ProposalTaxDrpDwnController());
+        
+       ProposalDeliveryErectionController proposalDeliveryErectionController =
+      Get.put(ProposalDeliveryErectionController());
+      
   var discount_type = ['%', 'Fixed Amount'];
   var discount_type_name;
   var additem;
   var selectedindex;
   var load;
   var travel;
+  var opvalue;
   var travelindex;
   var proposalstop;
   var proposalopen;
@@ -87,11 +122,18 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
   var proposalOperation;
   var proposalMachine;
   var speedvalue;
+  var listvalue;
+  var delivery;
+  var erection;
+  var listid;
   // var addcon=true;
   // var loadcon=true;
   // var speedcon=true;
   // var travelcon=true;
 
+  List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
+  var listitem;
   @override
   void initState() {
     func();
@@ -99,10 +141,12 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
   }
 
   func() {
-    addItemProposalController.addItemProposalController();
-    proposalLoadController.proposalrelatedController().then((value) {
+    setState(() {
+      addItemProposalController.addItemProposalController();
+    });
+    proposalLoadController.proposalloadController().then((value) {
       setState(() {
-         proposalLoadController.getproposalload[0].data[0].loadid;
+        proposalLoadController.getproposalloadlist[0].data[0].loadid.toString();
       });
     });
 
@@ -114,38 +158,50 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
 
     proposalTravelController.proposalTravelController().then((value) {
       setState(() {
-       proposalTravelController.getproposalTravel[0].data[0].travelid;
+        proposalTravelController.getproposalTravel[0].data[0].travelid;
       });
     });
 
     proposalStopController.proposalStopController().then((value) {
       setState(() {
-     proposalstop=    proposalStopController.getproposalStop[0].data[0].stopid;
+        proposalstop = proposalStopController.getproposalStop[0].data[0].stopid;
       });
     });
 
     proposalOpenController.proposalOpenController().then((value) {
       setState(() {
-     proposalopen= proposalOpenController.getproposalOpen[0].data[0].openingid;
+        proposalopen =
+            proposalOpenController.getproposalOpen[0].data[0].openingid;
       });
     });
 
     proposalControlController.proposalControlController().then((value) {
       setState(() {
-    proposalControl=     proposalControlController.getproposalControl[0].data[0].controlid;
+        proposalControl =
+            proposalControlController.getproposalControl[0].data[0].controlid;
       });
     });
 
     proposalOperationController.proposalOperationController().then((value) {
       setState(() {
-       proposalOperationController.getproposalOperation[0].data[0].operationid.toString();
+        opvalue = proposalOperationController
+            .getproposalOperation[0].data[0].operationid;
       });
     });
     proposalMachineController.proposalMachineController().then((value) {
       setState(() {
-      proposalMachineController.getproposalMachine[0].data[0].machineid;
+        proposalMachineController.getproposalMachine[0].data[0].machineid;
       });
     });
+    proposalTaxdrpdownController.proposaltaxdrpdwnController().then((value) {
+      setState(() {
+        proposalTaxController.getproposaltax[0].data[0].id;
+      });
+      
+    },);
+ proposalDeliveryErectionController.proposalErectionController();
+ proposalDeliveryErectionController.proposalDeliveryController();
+     proposalTaxdrpdownController.proposaltaxdrpdwnController();
     setState(() {});
   }
 
@@ -153,7 +209,7 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
-          height: 23.0.hp,
+          height: 25.0.hp,
           child: Container(
             height: 40.0.hp,
             width: 80.0.wp,
@@ -167,10 +223,11 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
               children: <Widget>[
                 Container(
                   alignment: Alignment.bottomRight,
-                  height: 3.0.hp,
+                  height: 4.0.hp,
                   width: 50.0.wp,
-                  decoration:
-                      BoxDecoration(border: Border.all(color: formhintcolor)),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: formhintcolor)),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -190,231 +247,211 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
 
                         Obx(() {
                           if (getAddItemListController.isadditemlistLoad.value &&
-                              
-                              proposalLoadAmtController
+                              proposalLoadController
                                   .isproposaLoadamtLoad.value &&
                               proposalSpeedAmtController
                                   .isproposaspeedamtLoad.value &&
-                                   
+                              proposalOperationController
+                                  .isproposaloperationamtLoad.value &&
                               proposalTravelAmtController
                                   .isproposltravelamtLoad.value) {
                             return Text('0');
-                          } else if (getAddItemListController.getadditemproposal.isEmpty &&
-                               
-                              proposalLoadAmtController
+                          } else if (getAddItemListController
+                                  .getadditemproposal.isEmpty &&
+                              proposalLoadController
                                   .getproposalloadamt.isEmpty &&
                               proposalSpeedAmtController
                                   .getproposalspeedamt.isEmpty &&
                               proposalTravelAmtController
-                                  .getproposaltravelamt.isEmpty) {
+                                  .getproposaltravelamt.isEmpty &&
+                              proposalOperationController
+                                  .getproposalOperationamt.isEmpty) {
                             return Text('ccc');
                           } else {
-                            return Text(
-                                '${commonVariable.commonapidata.value.toString()}');
+                            return Obx(
+                              () => Text(
+                                  '${commonVariable.commonapidata.value.toString()}'),
+                            );
                           }
                         })
                       ],
                     ),
                   ),
                 ),
-                // Container(
-                //     alignment: Alignment.bottomRight,
-                //     height: 7.0.hp,
-                //     width: 100.0.wp,
-                //     // decoration: BoxDecoration(
-                //     //   border: Border.all(color: formhintcolor)
-                //     // ),
-                //     child: Center(
-                //         child: Row(
-                //             //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //             children: [
-                //           Container(
-                //             color: const Color(0xffD9D9D9).withOpacity(0.1),
-                //             height: 6.00.hp, width: 30.00.wp,
-                //             // padding: const EdgeInsets.only(
-                //             //   left: 20,
-                //             //   right: 20,
-                //             // ),
-                //             child: TextFormField(
-                //               //  controller: getProposalRelatedController.oepntill,
-                //               style: GoogleFonts.jost(
-                //                   textStyle: TextStyle(
-                //                       fontSize: 10.00.sp,
-                //                       color: forminputcolor,
-                //                       fontWeight: FontWeight.w500)),
-                //               decoration: InputDecoration(
-                //                   focusedBorder: OutlineInputBorder(
-                //                     borderRadius: BorderRadius.circular(5.0),
-                //                     borderSide: const BorderSide(
-                //                         color: appcolor, width: 1),
-                //                   ),
-                //                   label: Text('Discount'),
-                //                   labelStyle: formhintstyle,
-                //                   enabledBorder: OutlineInputBorder(
-                //                     borderRadius: BorderRadius.circular(5.0),
-                //                     borderSide: BorderSide(
-                //                         color: const Color(0xffC6C6C6)
-                //                             .withOpacity(0.5),
-                //                         width: 1),
-                //                   ),
-                //                   fillColor: const Color(0xffC6C6C6),
-                //                   hintText: '',
-                //                   contentPadding:
-                //                       const EdgeInsets.only(left: 10),
-                //                   hintStyle: GoogleFonts.jost(
-                //                       textStyle: TextStyle(
-                //                           fontSize: 10.00.sp,
-                //                           color: formhintcolor,
-                //                           fontWeight: FontWeight.w500)),
-                //                   border: const OutlineInputBorder(
-                //                     gapPadding: 4,
-                //                   )),
-                //             ),
-                //           ),
-                //           Row(
-                //             mainAxisAlignment: MainAxisAlignment.center,
-                //             children: [
-                //               Container(
-                //                   height: 6.00.hp,
-                //                   width: discount_type_name == '%'
-                //                       ? 10.0.wp
-                //                       : 30.00.wp,
-                //                   decoration: BoxDecoration(
-                //                     borderRadius: BorderRadius.circular(5.0),
-                //                     border: Border.all(
-                //                       color: formhintcolor,
-                //                       width:
-                //                           MediaQuery.of(context).size.height *
-                //                               0.001,
-                //                     ),
-                //                   ),
-                //                   child: DropdownButtonHideUnderline(
-                //                     child: DropdownButton<String>(
-                //                       isExpanded: true,
-                //                       value: discount_type_name,
-                //                       style: GoogleFonts.jost(
-                //                           textStyle: TextStyle(
-                //                               fontSize: 8.00.sp,
-                //                               color: forminputcolor,
-                //                               fontWeight: FontWeight.w500)),
-                //                       hint: Text('',
-                //                           style: GoogleFonts.jost(
-                //                               textStyle: TextStyle(
-                //                                   fontSize: 8.00.sp,
-                //                                   color: formhintcolor,
-                //                                   fontWeight:
-                //                                       FontWeight.w500))),
-                //                       onChanged: (newValue) {
-                //                         setState(() {
-                //                           if (newValue != null) {
-                //                             setState(() {
-                //                               discount_type_name =
-                //                                   newValue.toString();
-                //                               print('newwvalue');
-                //                               print(newValue.toString());
-                //                             });
-                //                           }
-                //                         });
-                //                       },
-                //                       icon: Icon(
-                //                         Icons.arrow_drop_down,
-                //                         size: 20,
-                //                         color: const Color(0xFF737070),
-                //                       ),
-                //                       items: discount_type
-                //                           .map<DropdownMenuItem<String>>(
-                //                               (value) {
-                //                         return DropdownMenuItem<String>(
-                //                           value: value.toString(),
-                //                           child: Container(
-                //                               margin: const EdgeInsets.only(
-                //                                   left: 0, right: 0),
-                //                               child: Text(value.toString(),
-                //                                   style: GoogleFonts.jost(
-                //                                       textStyle: TextStyle(
-                //                                           fontSize: 10.00.sp,
-                //                                           color:
-                //                                               forminputcolor,
-                //                                           fontWeight:
-                //                                               FontWeight
-                //                                                   .w500)))),
-                //                         );
-                //                       }).toList(),
-                //                     ),
-                //                   )),
-                //             ],
-                //           ),
-                //           Container(
-                //             alignment: Alignment.centerRight,
-                //             width: 30.0.wp,
-                //             child: Text(
-                //               '-1234456789 ',
-                //               style: listtitlefont,
-                //             ),
-                //           ),
-                //         ]))),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  height: 3.0.hp,
-                  width: 50.0.wp,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'CGST(9.00%): ',
-                          style: GoogleFonts.jost(
-                              textStyle: TextStyle(
-                                  fontSize: 8.00.sp,
-                                  color: toptitlecolor,
-                                  fontWeight: FontWeight.w800)),
-                        ),
-                        Text(
-                          '₹8910.00',
-                          style: GoogleFonts.jost(
-                              textStyle: TextStyle(
-                                  fontSize: 8.00.sp,
-                                  color: toptitlecolor,
-                                  fontWeight: FontWeight.w800)),
-                        ),
-                      ],
-                    ),
-                  ),
+                SizedBox(
+                  height: 1.0.hp,
+                ),
+                Obx(() {
+                  if (proposalTaxdrpdownController.istaxdrpdwnLoad.value) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (proposalTaxdrpdownController
+                      .gettaxdrpdwn.isEmpty) {
+                    return Center(
+                      child: Text('No data Found'),
+                    );
+                  } else {
+                    return Container(
+                      height: 6.0.hp,
+                      width: 100.0.wp,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: formhintcolor),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Row(
+                        children: [
+                          Text('${listitem.toString()}'),
+                         
+                          // Text('Selected Options: ${selectedOptions.join(', ')}'),
+
+                          Container(
+                            height: 6.0.hp,
+                            width: 50.0.wp,
+                            child: DropdownButtonFormField(
+                              key: GlobalKey(),
+                              decoration:
+                                  InputDecoration(border: InputBorder.none),
+
+                              isExpanded: true,
+                              // hint:   Text('select tax',style:formhintstyle,),
+                              value: selectedOptions.isEmpty
+                                  ? null
+                                  : selectedOptions,
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedOptions = value as List;
+                                });
+                              },
+                              items: proposalTaxdrpdownController
+                                      .gettaxdrpdwn[0].data.isEmpty
+                                  ? []
+                                  : proposalTaxdrpdownController
+                                      .gettaxdrpdwn[0].data
+                                      .map((option) {
+                                      return DropdownMenuItem(
+                                        key: UniqueKey(),
+                                        value: option,
+                                        child: StatefulBuilder(
+                                            builder: (context, setstate) {
+                                          return CheckboxListTile(
+                                            title: Text(
+                                              option.taxrate.toString(),
+                                              style: listtitle,
+                                            ),
+                                            value: option.bval,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                // if (value != null && value) {
+                                                //   selectedOptions.add(option);
+                                                // } else {
+                                                //   selectedOptions.remove(option);
+                                                // }
+                                                  listvalue=value;
+                                                var item =
+                                                    proposalTaxdrpdownController
+                                                        .gettaxdrpdwn[0].data
+                                                        .indexOf(option);
+                                                print(item);
+                                                proposalTaxdrpdownController
+                                                    .gettaxdrpdwn[0]
+                                                    .data[item]
+                                                    .bval = value ?? false;
+                                                print(
+                                                    proposalTaxdrpdownController
+                                                        .gettaxdrpdwn[0]
+                                                        .data[item]
+                                                        .bval);
+                                                // if(item==0){
+                                                //   setState(() {
+                                                //     proposalTaxController.gettaxdrpdwn[0].data[1]
+                                                // .bval = true;
+                                                //   });
+                                                // }
+                                                //  if(item==1){
+                                                //   setState(() {
+                                                //     proposalTaxController.gettaxdrpdwn[0].data[0]
+                                                // .bval = true;
+                                                //   });
+                                                
+                                                if (item == 0) {
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[0]
+                                                      .bval = true;
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[1]
+                                                      .bval = true;
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[2]
+                                                      .bval = false;
+                                                   listitem='${proposalTaxdrpdownController.gettaxdrpdwn[0].data[0].name} ${proposalTaxdrpdownController.gettaxdrpdwn[0].data[1].name}';
+                                                   listid='1,2';
+                                                   log(proposalTaxController.taxamount.value);
+                                                   proposalTaxController.proposalTaxController(taxid: '1,2',subtotal: commonVariable.commonapidata.value,total: commonVariable.commontotal.value);
+                                                }
+                                                if (item == 1) {
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[1]
+                                                      .bval = true;
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[0]
+                                                      .bval = true;
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[2]
+                                                      .bval = false;
+                                                         listid='1,2';
+                                                          log(listid);
+                                                  listitem='${proposalTaxdrpdownController.gettaxdrpdwn[0].data[0].name} ${proposalTaxdrpdownController.gettaxdrpdwn[0].data[1].name}';
+                                                  proposalTaxController.proposalTaxController(taxid: 0,subtotal: commonVariable.commonapidata.value,total: commonVariable.commontotal.value);
+                                                }
+                                                if (item == 2) {
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[0]
+                                                      .bval = false;
+                                                  proposalTaxdrpdownController
+                                                      .gettaxdrpdwn[0]
+                                                      .data[1]
+                                                      .bval = false;
+                                                         listid='3';
+                                                          log(listid);
+                                                  listitem =
+                                                      '${proposalTaxdrpdownController.gettaxdrpdwn[0].data[0].name}';
+                                                      proposalTaxController.proposalTaxController(taxid: item,subtotal: commonVariable.commonapidata.value,total: commonVariable.commontotal.value);
+                                                }
+                                                // else{
+                                                //    proposalTaxController.gettaxdrpdwn[0].data[2].bval=false;
+                                                // }
+                                              });
+                                            },
+                                          );
+                                        }),
+                                      );
+                                    }).toList(),
+                            ),
+                          ),
+                            Text(proposalTaxController.taxamount.value,),
+                        ],
+                      ),
+                    );
+                  }
+                }),
+                
+                SizedBox(
+                  height: 2.0.hp,
                 ),
                 Container(
                   alignment: Alignment.bottomRight,
-                  height: 3.0.hp,
+                  height: 4.0.hp,
                   width: 50.0.wp,
-                  child: Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'SGST(9.00%): ',
-                          style: GoogleFonts.jost(
-                              textStyle: TextStyle(
-                                  fontSize: 8.00.sp,
-                                  color: toptitlecolor,
-                                  fontWeight: FontWeight.w800)),
-                        ),
-                        Text(
-                          '₹8910.00',
-                          style: GoogleFonts.jost(
-                              textStyle: TextStyle(
-                                  fontSize: 8.00.sp,
-                                  color: toptitlecolor,
-                                  fontWeight: FontWeight.w800)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  height: 3.0.hp,
-                  width: 50.0.wp,
-                  decoration:
-                      BoxDecoration(border: Border.all(color: formhintcolor)),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: formhintcolor)),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -428,23 +465,23 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                   fontWeight: FontWeight.w800)),
                         ),
                         Obx(() {
-                          if (getAddItemListController.isadditemlistLoad.value ||
-                              proposalOperationController.isproposaloperationamtLoad.value
-                                   ||
-                              proposalLoadAmtController
-                                  .isproposaLoadamtLoad.value ||
+                          if (getAddItemListController.isadditemlistLoad.value &&
+                              proposalOperationController
+                                  .isproposaloperationamtLoad.value &&
+                              proposalLoadController
+                                  .isproposaLoadamtLoad.value &&
                               proposalSpeedAmtController
-                                  .isproposaspeedamtLoad.value ||
+                                  .isproposaspeedamtLoad.value &&
                               proposalTravelAmtController
                                   .isproposltravelamtLoad.value) {
                             return Text('0');
-                          } else if (getAddItemListController.getadditemproposal.isEmpty ||
+                          } else if (getAddItemListController.getadditemproposal.isEmpty &&
                               proposalOperationController
-                                  .getproposaloperationamt.isEmpty ||
-                              proposalLoadAmtController
-                                  .getproposalloadamt.isEmpty ||
+                                  .getproposalOperationamt.isEmpty &&
+                              proposalLoadController
+                                  .getproposalloadamt.isEmpty &&
                               proposalSpeedAmtController
-                                  .getproposalspeedamt.isEmpty ||
+                                  .getproposalspeedamt.isEmpty &&
                               proposalTravelAmtController
                                   .getproposaltravelamt.isEmpty) {
                             return Text('ccc');
@@ -469,37 +506,40 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                 InkWell(
                   onTap: () {
                     proposalCreateController.proposalCreateController(
-                        leadid: widget.id.toString(),
-                        subject: widget.subjectname.toString(),
-                        total:commonVariable.commontotal.value.toString(),
-                        subtotal: commonVariable.commonapidata.value.toString(),
-                        taxamount: '156600',
-                        open_till: widget.opentillname.toString(),
-                        date: widget.datename.toString(),
-                        proposal_to: widget.proposaltoname.toString(),
-                        country: widget.countryname.toString(),
-                        zip: widget.zipname.toString(),
-                        state: widget.statename.toString(),
-                        city: widget.cityname.toString(),
-                        address: widget.addressname.toString(),
-                        email: widget.emailname.toString(),
-                        phone: widget.phonename.toString(),
-                        status: widget.statename.toString(),
-                        currency: widget.currencyname.toString(),
-                        liftpriceid: additem,
-                        loadid: load,
-                        speedid: speedvalue,
-                        travelid: travel,
-                        stopid: proposalstop,
-                        openingid: proposalopen,
-                        controlid: proposalControl,
-                        operationid: proposalOperation,
-                        machineid: proposalMachine,
-                        hoistwaysize: getAddItemListController.hoistwaysize.text,
-                        carsize: getAddItemListController.carsize.text,
-                        delivery: getAddItemListController.delivery.text,
-                        erection: getAddItemListController.erection.text,
-                        power_supply: getAddItemListController.powersupply.text,);
+                      leadid: widget.id.toString(),
+                      subject: widget.subjectname.toString(),
+                      total: commonVariable.commontotal.value.toString(),
+                      subtotal: commonVariable.commonapidata.value.toString(),
+                      taxamount: '0',
+                      open_till: widget.opentillname.toString(),
+                      date: widget.datename.toString(),
+                      proposal_to: widget.proposaltoname.toString(),
+                      country: widget.countryname.toString(),
+                      zip: widget.zipname.toString(),
+                      state: widget.statename.toString(),
+                      city: widget.cityname.toString(),
+                      address: widget.addressname.toString(),
+                      email: widget.emailname.toString(),
+                      phone: widget.phonename.toString(),
+                      status: widget.statename.toString(),
+                      currency: widget.currencyname.toString(),
+                      liftpriceid: additem,
+                      loadid: load,
+                      speedid: speedvalue,
+                      travelid: travel,
+                      stopid: proposalstop,
+                      openingid: proposalopen,
+                      controlid: proposalControl,
+                      operationid: opvalue,
+                      machineid: proposalMachine,
+                      hoistwaysize: getAddItemListController.hoistwaysize.text,
+                      carsize: getAddItemListController.carsize.text,
+                      delivery: delivery,
+                      erection:  erection,
+                      power_supply: getAddItemListController.powersupply.text,
+                      units: '2',
+                      taxid: listid
+                    );
                   },
                   child: Container(
                     height: 4.0.hp,
@@ -537,25 +577,31 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
       ),
       body: Obx(() {
         if (addItemProposalController.isadditemLoad.value ||
-            proposalLoadController.isproposaLoad.value ||
             proposalSpeedController.isproposalspeedLoad.value ||
             proposalTravelController.isproposaltravelLoad.value ||
             proposalControlController.isproposalControlLoad.value ||
             proposalStopController.isproposalStopLoad.value ||
             proposalOpenController.isproposalOpenLoad.value ||
             proposalOperationController.isproposalOperationLoad.value ||
-            proposalMachineController.isproposalMachineLoad.value) {
+            proposalMachineController.isproposalMachineLoad.value
+            
+          
+             
+            ) {
           return Center(
             child: CircularProgressIndicator(),
           );
         } else if (addItemProposalController.getadditemproposal.isEmpty ||
-            proposalLoadController.getproposalload.isEmpty ||
             proposalControlController.getproposalControl.isEmpty ||
             proposalSpeedController.getproposalSpeed.isEmpty ||
             proposalTravelController.getproposalTravel.isEmpty ||
             proposalOpenController.getproposalOpen.isEmpty ||
             proposalOperationController.getproposalOperation.isEmpty ||
-            proposalMachineController.getproposalMachine.isEmpty) {
+            proposalMachineController.getproposalMachine.isEmpty
+           
+          
+            
+            ) {
           return Center(
             child: Text('No data Found'),
           );
@@ -974,20 +1020,17 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                         print(newValue.toString());
                                         print('clickkkk');
 
-                                        proposalLoadAmtController
+                                        proposalLoadController
                                             .proposalLoadAmtController(
                                                 loadid: load,
-                                                subtotal:
-                                                    getAddItemListController
-                                                        .getadditemproposal[0]
-                                                        .data[0]
-                                                        .subtotal,
-                                                total: getAddItemListController
-                                                    .getadditemproposal[0]
-                                                    .data[0]
-                                                    .total);
+                                                total: commonVariable
+                                                    .commonapidata
+                                                    .toString(),
+                                                subtotal: commonVariable
+                                                    .commontotal
+                                                    .toString());
 
-                                        //loadcon=true;
+                                        //speedcon=true;
                                       });
                                     }
                                   });
@@ -998,10 +1041,10 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                   color: const Color(0xFF737070),
                                 ),
                                 items: proposalLoadController
-                                        .getproposalload[0].data.isEmpty
+                                        .getproposalloadlist[0].data.isEmpty
                                     ? []
                                     : proposalLoadController
-                                        .getproposalload[0].data
+                                        .getproposalloadlist[0].data
                                         .map<DropdownMenuItem<String>>((value) {
                                         return DropdownMenuItem<String>(
                                           value: value.loadid.toString(),
@@ -1023,6 +1066,95 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                       ],
                     ),
                   ]),
+                  // Row(children: [
+                  //   Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Container(
+                  //           height: 7.00.hp,
+                  //           width: 90.00.wp,
+                  //           padding:
+                  //               const EdgeInsets.symmetric(horizontal: 10.0),
+                  //           decoration: BoxDecoration(
+                  //             borderRadius: BorderRadius.circular(5.0),
+                  //             border: Border.all(
+                  //               color: const Color(0xFFECE9E9),
+                  //               width:
+                  //                   MediaQuery.of(context).size.height * 0.001,
+                  //             ),
+                  //           ),
+                  //           child: DropdownButtonHideUnderline(
+                  //             child: DropdownButton<String>(
+                  //               value: load,
+                  //               style: GoogleFonts.jost(
+                  //                   textStyle: TextStyle(
+                  //                       fontSize: 10.00.sp,
+                  //                       color: forminputcolor,
+                  //                       fontWeight: FontWeight.w500)),
+                  //               hint: Text('Load',
+                  //                   style: GoogleFonts.jost(
+                  //                       textStyle: TextStyle(
+                  //                           fontSize: 10.00.sp,
+                  //                           color: formhintcolor,
+                  //                           fontWeight: FontWeight.w500))),
+                  //               onChanged: (newValue) {
+                  //                 setState(() {
+                  //                   if (newValue != null) {
+                  //                     setState(() {
+                  //                       load = newValue.toString();
+                  //                       print('newwvalue');
+                  //                       print(newValue.toString());
+                  //                       print('clickkkk');
+
+                  //                       proposalLoadController
+                  //                           .proposalLoadAmtController(
+                  //                               loadid: load,
+                  //                               subtotal:
+                  //                                   getAddItemListController
+                  //                                       .getadditemproposal[0]
+                  //                                       .data[0]
+                  //                                       .subtotal,
+                  //                               total: getAddItemListController
+                  //                                   .getadditemproposal[0]
+                  //                                   .data[0]
+                  //                                   .total);
+
+                  //                       //loadcon=true;
+                  //                     });
+                  //                   }
+                  //                 });
+                  //               },
+                  //               icon: Icon(
+                  //                 Icons.arrow_drop_down,
+                  //                 size: 20,
+                  //                 color: const Color(0xFF737070),
+                  //               ),
+                  //               items: proposalLoadController
+                  //                       .getproposalloadlist[0].data.isEmpty
+                  //                   ? []
+                  //                   : proposalLoadController
+                  //                       .getproposalloadlist[0].data
+                  //                       .map<DropdownMenuItem<String>>((value) {
+                  //                       return DropdownMenuItem<String>(
+                  //                         value: value.loadid.toString(),
+                  //                         child: Container(
+                  //                             margin: const EdgeInsets.only(
+                  //                                 left: 0, right: 4),
+                  //                             child: Text(
+                  //                                 value.optionname.toString(),
+                  //                                 style: GoogleFonts.jost(
+                  //                                     textStyle: TextStyle(
+                  //                                         fontSize: 10.00.sp,
+                  //                                         color: forminputcolor,
+                  //                                         fontWeight: FontWeight
+                  //                                             .w500)))),
+                  //                       );
+                  //                     }).toList(),
+                  //             ),
+                  //           )),
+                  //     ],
+                  //   ),
+                  // ]),
                   SizedBox(
                     height: 1.0.hp,
                   ),
@@ -1076,17 +1208,12 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                         proposalSpeedAmtController
                                             .proposalSpeedAmtController(
                                                 speedid: speedvalue,
-                                                total: getAddItemListController
-                                                    .getadditemproposal[0]
-                                                    .data[0]
-                                                    .total
+                                                total: commonVariable
+                                                    .commonapidata
                                                     .toString(),
-                                                subtotal:
-                                                    getAddItemListController
-                                                        .getadditemproposal[0]
-                                                        .data[0]
-                                                        .subtotal
-                                                        .toString());
+                                                subtotal: commonVariable
+                                                    .commontotal
+                                                    .toString());
 
                                         //speedcon=true;
                                       });
@@ -1176,15 +1303,9 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                                 .data[0]
                                                 .specificationid
                                                 .toString(),
-                                            subtotal: getAddItemListController
-                                                .getadditemproposal[0]
-                                                .data[0]
-                                                .subtotal
+                                            total: commonVariable.commonapidata
                                                 .toString(),
-                                            total: getAddItemListController
-                                                .getadditemproposal[0]
-                                                .data[0]
-                                                .total
+                                            subtotal: commonVariable.commontotal
                                                 .toString());
                                     // travelcon=true;
                                   });
@@ -1334,42 +1455,43 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                                                     .only(
                                                                     left: 0,
                                                                     right: 4),
-                                                            child:Obx(() {
-                                                if (proposalTravelAmtController
-                                                        .isproposltravelamtLoad
-                                                        .value &&
-                                                    getAddItemListController
-                                                        .isadditemlistLoad
-                                                        .value) {
-                                                  return Center(
-                                                    child: Text('Stop'),
-                                                  );
-                                                } else if (proposalTravelAmtController
-                                                        .getproposaltravelamt
-                                                        .isEmpty ||
-                                                    getAddItemListController
-                                                        .getadditemproposal
-                                                        .isEmpty) {
-                                                  return Text('No data found');
-                                                } else {
-                                                  return Text(
-                                                      proposalTravelAmtController
-                                                          .getproposaltravelamt[
-                                                              0]
-                                                          .data[0]
-                                                          .stop
-                                                          .toString(),
-                                                      style: GoogleFonts.jost(
-                                                          textStyle: TextStyle(
-                                                              fontSize:
-                                                                  10.00.sp,
-                                                              color:
-                                                                  formhintcolor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)));
-                                                }
-                                              })),
+                                                            child: Obx(() {
+                                                              if (proposalTravelAmtController
+                                                                      .isproposltravelamtLoad
+                                                                      .value &&
+                                                                  getAddItemListController
+                                                                      .isadditemlistLoad
+                                                                      .value) {
+                                                                return Center(
+                                                                  child: Text(
+                                                                      'Stop'),
+                                                                );
+                                                              } else if (proposalTravelAmtController
+                                                                      .getproposaltravelamt
+                                                                      .isEmpty ||
+                                                                  getAddItemListController
+                                                                      .getadditemproposal
+                                                                      .isEmpty) {
+                                                                return Text(
+                                                                    'No data found');
+                                                              } else {
+                                                                return Text(
+                                                                    proposalTravelAmtController
+                                                                        .getproposaltravelamt[
+                                                                            0]
+                                                                        .data[0]
+                                                                        .stop
+                                                                        .toString(),
+                                                                    style: GoogleFonts.jost(
+                                                                        textStyle: TextStyle(
+                                                                            fontSize: 10.00
+                                                                                .sp,
+                                                                            color:
+                                                                                formhintcolor,
+                                                                            fontWeight:
+                                                                                FontWeight.w500)));
+                                                              }
+                                                            })),
                                                       );
                                                     }).toList(),
                                             ),
@@ -1410,7 +1532,7 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                                       color: forminputcolor,
                                                       fontWeight:
                                                           FontWeight.w500)),
-                                              hint:Text('Opening'),
+                                              hint: Text('Opening'),
                                               onChanged: (newValue) {
                                                 setState(() {
                                                   if (newValue != null) {
@@ -1442,52 +1564,53 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                                                           DropdownMenuItem<
                                                               String>>((value) {
                                                       return DropdownMenuItem<
-                                                          String>(
-                                                        value: value.openingid
-                                                            .toString(),
-                                                        child: Container(
+                                                              String>(
+                                                          value: value.openingid
+                                                              .toString(),
+                                                          child: Container(
                                                             margin:
                                                                 const EdgeInsets
                                                                     .only(
                                                                     left: 0,
                                                                     right: 4),
-                                                            child:  Obx(() {
-                                                if (proposalTravelAmtController
-                                                        .isproposltravelamtLoad
-                                                        .value &&
-                                                    getAddItemListController
-                                                        .isadditemlistLoad
-                                                        .value) {
-                                                  return Center(
-                                                    child: Text('Opening'),
-                                                  );
-                                                } else if (proposalTravelAmtController
-                                                        .getproposaltravelamt
-                                                        .isEmpty ||
-                                                    getAddItemListController
-                                                        .getadditemproposal
-                                                        .isEmpty) {
-                                                  return Text('No data found');
-                                                } else {
-                                                  return Text(
-                                                      proposalTravelAmtController
-                                                          .getproposaltravelamt[
-                                                              0]
-                                                          .data[0]
-                                                          .opening
-                                                          .toString(),
-                                                      style: GoogleFonts.jost(
-                                                          textStyle: TextStyle(
-                                                              fontSize:
-                                                                  10.00.sp,
-                                                              color:
-                                                                  formhintcolor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)));
-                                                }
-                                              }),)
-                                                      );
+                                                            child: Obx(() {
+                                                              if (proposalTravelAmtController
+                                                                      .isproposltravelamtLoad
+                                                                      .value &&
+                                                                  getAddItemListController
+                                                                      .isadditemlistLoad
+                                                                      .value) {
+                                                                return Center(
+                                                                  child: Text(
+                                                                      'Opening'),
+                                                                );
+                                                              } else if (proposalTravelAmtController
+                                                                      .getproposaltravelamt
+                                                                      .isEmpty ||
+                                                                  getAddItemListController
+                                                                      .getadditemproposal
+                                                                      .isEmpty) {
+                                                                return Text(
+                                                                    'No data found');
+                                                              } else {
+                                                                return Text(
+                                                                    proposalTravelAmtController
+                                                                        .getproposaltravelamt[
+                                                                            0]
+                                                                        .data[0]
+                                                                        .opening
+                                                                        .toString(),
+                                                                    style: GoogleFonts.jost(
+                                                                        textStyle: TextStyle(
+                                                                            fontSize: 10.00
+                                                                                .sp,
+                                                                            color:
+                                                                                formhintcolor,
+                                                                            fontWeight:
+                                                                                FontWeight.w500)));
+                                                              }
+                                                            }),
+                                                          ));
                                                     }).toList(),
                                             ),
                                           )),
@@ -1523,13 +1646,13 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            value: proposalOperation,
+                            value: opvalue,
                             style: GoogleFonts.jost(
                                 textStyle: TextStyle(
                                     fontSize: 10.00.sp,
                                     color: forminputcolor,
                                     fontWeight: FontWeight.w500)),
-                            hint: Text('Operation',
+                            hint: Text('operation',
                                 style: GoogleFonts.jost(
                                     textStyle: TextStyle(
                                         fontSize: 10.00.sp,
@@ -1539,30 +1662,24 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                               setState(() {
                                 if (newValue != null) {
                                   setState(() {
-                                    proposalOperation = newValue.toString();
-                                    print('newwvalue');
-                                    print(newValue.toString());
+                                    opvalue = newValue;
+                                    log('newwvalue');
+                                    log(opvalue.toString());
                                     print('clickkkk');
-                                  
-                                    proposalOperationController
+// commonVariable.commonapidata.value='output';
+                                    proposalOperationAmtController
                                         .proposalOperationAmtController(
-                                            operationid: proposalOperation,
+                                            operationid: opvalue,
                                             typeid: getAddItemListController
                                                 .getadditemproposal[0]
                                                 .data[0]
                                                 .typeid
                                                 .toString(),
-                                            total: getAddItemListController
-                                                .getadditemproposal[0]
-                                                .data[0]
-                                                .total
+                                            total: commonVariable.commonapidata
                                                 .toString(),
-                                            subtotal: getAddItemListController
-                                                .getadditemproposal[0]
-                                                .data[0]
-                                                .subtotal
+                                            subtotal: commonVariable.commontotal
                                                 .toString());
-                                                  
+                                    // travelcon=true;
                                   });
                                 }
                               });
@@ -1675,7 +1792,7 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                   SizedBox(
                     height: 1.0.hp,
                   ),
-                  
+
                   Text(
                     'Machine*',
                     style: listtitlefont,
@@ -2006,255 +2123,358 @@ class _ProposalNextPageState extends State<ProposalNextPage> {
                   //   ),
                   // ),
                   SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Text(
+                    'Hoistway Size*',
+                    style: listtitlefont,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Container(
+                    color: const Color(0xffD9D9D9).withOpacity(0.1),
+                    height: 7.00.hp, width: 100.00.wp,
+                    // padding: const EdgeInsets.only(
+                    //   left: 20,
+                    //   right: 20,
+                    // ),
+                    child: TextFormField(
+                      controller: getAddItemListController.hoistwaysize,
+                      style: GoogleFonts.jost(
+                          textStyle: TextStyle(
+                              fontSize: 10.00.sp,
+                              color: forminputcolor,
+                              fontWeight: FontWeight.w500)),
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide:
+                                const BorderSide(color: appcolor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: BorderSide(
+                                color: const Color(0xffC6C6C6).withOpacity(0.5),
+                                width: 1),
+                          ),
+                          fillColor: const Color(0xffC6C6C6),
+                          hintText: '',
+                          contentPadding: const EdgeInsets.only(left: 10),
+                          hintStyle: GoogleFonts.jost(
+                              textStyle: TextStyle(
+                                  fontSize: 10.00.sp,
+                                  color: formhintcolor,
+                                  fontWeight: FontWeight.w500)),
+                          border: const OutlineInputBorder(
+                            gapPadding: 4,
+                          )),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Text(
+                    'Car Size*',
+                    style: listtitlefont,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Container(
+                    color: const Color(0xffD9D9D9).withOpacity(0.1),
+                    height: 7.00.hp, width: 100.00.wp,
+                    // padding: const EdgeInsets.only(
+                    //   left: 20,
+                    //   right: 20,
+                    // ),
+                    child: TextFormField(
+                      controller: getAddItemListController.carsize,
+                      style: GoogleFonts.jost(
+                          textStyle: TextStyle(
+                              fontSize: 10.00.sp,
+                              color: forminputcolor,
+                              fontWeight: FontWeight.w500)),
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide:
+                                const BorderSide(color: appcolor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: BorderSide(
+                                color: const Color(0xffC6C6C6).withOpacity(0.5),
+                                width: 1),
+                          ),
+                          fillColor: const Color(0xffC6C6C6),
+                          hintText: '',
+                          contentPadding: const EdgeInsets.only(left: 10),
+                          hintStyle: GoogleFonts.jost(
+                              textStyle: TextStyle(
+                                  fontSize: 10.00.sp,
+                                  color: formhintcolor,
+                                  fontWeight: FontWeight.w500)),
+                          border: const OutlineInputBorder(
+                            gapPadding: 4,
+                          )),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Text(
+                    'Delivery*',
+                    style: listtitlefont,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Row(children: [
+                      Container(
+                          height: 7.00.hp,
+                          width: 90.00.wp,
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            border: Border.all(
+                              color: const Color(0xFFECE9E9),
+                              width: MediaQuery.of(context).size.height * 0.001,
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value:delivery,
+                              style: GoogleFonts.jost(
+                                  textStyle: TextStyle(
+                                      fontSize: 10.00.sp,
+                                      color: forminputcolor,
+                                      fontWeight: FontWeight.w500)),
+                              hint: Text('Control',
+                                  style: GoogleFonts.jost(
+                                      textStyle: TextStyle(
+                                          fontSize: 10.00.sp,
+                                          color: formhintcolor,
+                                          fontWeight: FontWeight.w500))),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  if (newValue != null) {
+                                    setState(() {
+                                    delivery = newValue.toString();
+                                      print('newwvalue');
+                                      print(newValue.toString());
+                                      print('clickkkk');
+                                      travelindex = 1;
+                                    });
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                Icons.arrow_drop_down,
+                                size: 20,
+                                color: const Color(0xFF737070),
+                              ),
+                              items: proposalDeliveryErectionController
+                                      .getproposaldeliverylist[0].data.isEmpty
+                                  ? []
+                                  : proposalDeliveryErectionController
+                                      .getproposaldeliverylist[0].data
+                                      .map<DropdownMenuItem<String>>((value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value.deliveryid.toString(),
+                                        child: Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 0, right: 4),
+                                            child: Text(value.name.toString(),
+                                                style: GoogleFonts.jost(
+                                                    textStyle: TextStyle(
+                                                        fontSize: 10.00.sp,
+                                                        color: forminputcolor,
+                                                        fontWeight:
+                                                            FontWeight.w500)))),
+                                      );
+                                    }).toList(),
+                            ),
+                          )),
+                    ]),
+                     SizedBox(
                       height: 1.0.hp,
                     ),
                     Text(
-                      'Hoistway Size*',
+                      'Erection & Commissioning*',
                       style: listtitlefont,
                     ),
+
                     SizedBox(
                       height: 1.0.hp,
                     ),
-                    Container(
-                      color: const Color(0xffD9D9D9).withOpacity(0.1),
-                      height: 7.00.hp, width: 100.00.wp,
-                      // padding: const EdgeInsets.only(
-                      //   left: 20,
-                      //   right: 20,
-                      // ),
-                      child: TextFormField(
-                        controller: getAddItemListController.hoistwaysize,
-                        style: GoogleFonts.jost(
-                            textStyle: TextStyle(
-                                fontSize: 10.00.sp,
-                                color: forminputcolor,
-                                fontWeight: FontWeight.w500)),
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide:
-                                  const BorderSide(color: appcolor, width: 1),
+                    Row(children: [
+                      Container(
+                          height: 7.00.hp,
+                          width: 90.00.wp,
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5.0),
+                            border: Border.all(
+                              color: const Color(0xFFECE9E9),
+                              width: MediaQuery.of(context).size.height * 0.001,
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  color:
-                                      const Color(0xffC6C6C6).withOpacity(0.5),
-                                  width: 1),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: erection,
+                              style: GoogleFonts.jost(
+                                  textStyle: TextStyle(
+                                      fontSize: 10.00.sp,
+                                      color: forminputcolor,
+                                      fontWeight: FontWeight.w500)),
+                              hint: Text('Erection',
+                                  style: GoogleFonts.jost(
+                                      textStyle: TextStyle(
+                                          fontSize: 10.00.sp,
+                                          color: formhintcolor,
+                                          fontWeight: FontWeight.w500))),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  if (newValue != null) {
+                                    setState(() {
+                                     erection = newValue.toString();
+                                      print('newwvalue');
+                                      print(newValue.toString());
+                                      print('clickkkk');
+                                      travelindex = 1;
+                                    });
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                Icons.arrow_drop_down,
+                                size: 20,
+                                color: const Color(0xFF737070),
+                              ),
+                              items: proposalDeliveryErectionController
+                                      .getproposalerection[0].data.isEmpty
+                                  ? []
+                                  : proposalDeliveryErectionController
+                                      .getproposalerection[0].data
+                                      .map<DropdownMenuItem<String>>((value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value.erectionid.toString(),
+                                        child: Container(
+                                            margin: const EdgeInsets.only(
+                                                left: 0, right: 4),
+                                            child: Text(value.name.toString(),
+                                                style: GoogleFonts.jost(
+                                                    textStyle: TextStyle(
+                                                        fontSize: 10.00.sp,
+                                                        color: forminputcolor,
+                                                        fontWeight:
+                                                            FontWeight.w500)))),
+                                      );
+                                    }).toList(),
                             ),
-                            fillColor: const Color(0xffC6C6C6),
-                            hintText: '',
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            hintStyle: GoogleFonts.jost(
-                                textStyle: TextStyle(
-                                    fontSize: 10.00.sp,
-                                    color: formhintcolor,
-                                    fontWeight: FontWeight.w500)),
-                            border: const OutlineInputBorder(
-                              gapPadding: 4,
-                            )),
-                      ),
+                          )),
+                    ]),
+
+                      SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Text(
+                    'Power Supply*',
+                    style: listtitlefont,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Container(
+                    color: const Color(0xffD9D9D9).withOpacity(0.1),
+                    height: 7.00.hp, width: 100.00.wp,
+                    // padding: const EdgeInsets.only(
+                    //   left: 20,
+                    //   right: 20,
+                    // ),
+                    child: TextFormField(
+                      controller: getAddItemListController.powersupply,
+                      style: GoogleFonts.jost(
+                          textStyle: TextStyle(
+                              fontSize: 10.00.sp,
+                              color: forminputcolor,
+                              fontWeight: FontWeight.w500)),
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide:
+                                const BorderSide(color: appcolor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: BorderSide(
+                                color: const Color(0xffC6C6C6).withOpacity(0.5),
+                                width: 1),
+                          ),
+                          fillColor: const Color(0xffC6C6C6),
+                          hintText: '',
+                          contentPadding: const EdgeInsets.only(left: 10),
+                          hintStyle: GoogleFonts.jost(
+                              textStyle: TextStyle(
+                                  fontSize: 10.00.sp,
+                                  color: formhintcolor,
+                                  fontWeight: FontWeight.w500)),
+                          border: const OutlineInputBorder(
+                            gapPadding: 4,
+                          )),
                     ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Text(
-                      'Car Size*',
-                      style: listtitlefont,
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Container(
-                      color: const Color(0xffD9D9D9).withOpacity(0.1),
-                      height: 7.00.hp, width: 100.00.wp,
-                      // padding: const EdgeInsets.only(
-                      //   left: 20,
-                      //   right: 20,
-                      // ),
-                      child: TextFormField(
-                        controller: getAddItemListController.carsize,
-                        style: GoogleFonts.jost(
-                            textStyle: TextStyle(
-                                fontSize: 10.00.sp,
-                                color: forminputcolor,
-                                fontWeight: FontWeight.w500)),
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide:
-                                  const BorderSide(color: appcolor, width: 1),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  color:
-                                      const Color(0xffC6C6C6).withOpacity(0.5),
-                                  width: 1),
-                            ),
-                            fillColor: const Color(0xffC6C6C6),
-                            hintText: '',
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            hintStyle: GoogleFonts.jost(
-                                textStyle: TextStyle(
-                                    fontSize: 10.00.sp,
-                                    color: formhintcolor,
-                                    fontWeight: FontWeight.w500)),
-                            border: const OutlineInputBorder(
-                              gapPadding: 4,
-                            )),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Text(
-                      'Delivery*',
-                      style: listtitlefont,
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Container(
-                      color: const Color(0xffD9D9D9).withOpacity(0.1),
-                      height: 7.00.hp, width: 100.00.wp,
-                      // padding: const EdgeInsets.only(
-                      //   left: 20,
-                      //   right: 20,
-                      // ),
-                      child: TextFormField(
-                        controller: getAddItemListController.delivery,
-                        style: GoogleFonts.jost(
-                            textStyle: TextStyle(
-                                fontSize: 10.00.sp,
-                                color: forminputcolor,
-                                fontWeight: FontWeight.w500)),
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide:
-                                  const BorderSide(color: appcolor, width: 1),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  color:
-                                      const Color(0xffC6C6C6).withOpacity(0.5),
-                                  width: 1),
-                            ),
-                            fillColor: const Color(0xffC6C6C6),
-                            hintText: '',
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            hintStyle: GoogleFonts.jost(
-                                textStyle: TextStyle(
-                                    fontSize: 10.00.sp,
-                                    color: formhintcolor,
-                                    fontWeight: FontWeight.w500)),
-                            border: const OutlineInputBorder(
-                              gapPadding: 4,
-                            )),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Text(
-                      'Erection& Commissioning*',
-                      style: listtitlefont,
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Container(
-                      color: const Color(0xffD9D9D9).withOpacity(0.1),
-                      height: 7.00.hp, width: 100.00.wp,
-                      // padding: const EdgeInsets.only(
-                      //   left: 20,
-                      //   right: 20,
-                      // ),
-                      child: TextFormField(
-                        controller: getAddItemListController.erection,
-                        style: GoogleFonts.jost(
-                            textStyle: TextStyle(
-                                fontSize: 10.00.sp,
-                                color: forminputcolor,
-                                fontWeight: FontWeight.w500)),
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide:
-                                  const BorderSide(color: appcolor, width: 1),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  color:
-                                      const Color(0xffC6C6C6).withOpacity(0.5),
-                                  width: 1),
-                            ),
-                            fillColor: const Color(0xffC6C6C6),
-                            hintText: '',
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            hintStyle: GoogleFonts.jost(
-                                textStyle: TextStyle(
-                                    fontSize: 10.00.sp,
-                                    color: formhintcolor,
-                                    fontWeight: FontWeight.w500)),
-                            border: const OutlineInputBorder(
-                              gapPadding: 4,
-                            )),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Text(
-                      'Power Supply*',
-                      style: listtitlefont,
-                    ),
-                    SizedBox(
-                      height: 1.0.hp,
-                    ),
-                    Container(
-                      color: const Color(0xffD9D9D9).withOpacity(0.1),
-                      height: 7.00.hp, width: 100.00.wp,
-                      // padding: const EdgeInsets.only(
-                      //   left: 20,
-                      //   right: 20,
-                      // ),
-                      child: TextFormField(
-                        controller: getAddItemListController.powersupply,
-                        style: GoogleFonts.jost(
-                            textStyle: TextStyle(
-                                fontSize: 10.00.sp,
-                                color: forminputcolor,
-                                fontWeight: FontWeight.w500)),
-                        decoration: InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide:
-                                  const BorderSide(color: appcolor, width: 1),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: BorderSide(
-                                  color:
-                                      const Color(0xffC6C6C6).withOpacity(0.5),
-                                  width: 1),
-                            ),
-                            fillColor: const Color(0xffC6C6C6),
-                            hintText: '',
-                            contentPadding: const EdgeInsets.only(left: 10),
-                            hintStyle: GoogleFonts.jost(
-                                textStyle: TextStyle(
-                                    fontSize: 10.00.sp,
-                                    color: formhintcolor,
-                                    fontWeight: FontWeight.w500)),
-                            border: const OutlineInputBorder(
-                              gapPadding: 4,
-                            )),
-                      ),
-                    ),
+                  ),
+                  SizedBox(height: 1.0.hp,),
+                  Text(
+                    'No.of Units*',
+                    style: listtitlefont,
+                  ),
+                  SizedBox(
+                    height: 1.0.hp,
+                  ),
+                  Container(
+                    color: const Color(0xffD9D9D9).withOpacity(0.1),
+                    height: 7.00.hp, width: 100.00.wp,
+                    // padding: const EdgeInsets.only(
+                    //   left: 20,
+                    //   right: 20,
+                    // ),
+                    child: TextFormField(
+                      controller: proposalCreateController.units,
+                      style: GoogleFonts.jost(
+                          textStyle: TextStyle(
+                              fontSize: 10.00.sp,
+                              color: forminputcolor,
+                              fontWeight: FontWeight.w500)),
+                      decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide:
+                                const BorderSide(color: appcolor, width: 1),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: BorderSide(
+                                color: const Color(0xffC6C6C6).withOpacity(0.5),
+                                width: 1),
+                          ),
+                          fillColor: const Color(0xffC6C6C6),
+                          hintText: '',
+                          contentPadding: const EdgeInsets.only(left: 10),
+                          hintStyle: GoogleFonts.jost(
+                              textStyle: TextStyle(
+                                  fontSize: 10.00.sp,
+                                  color: formhintcolor,
+                                  fontWeight: FontWeight.w500)),
+                          border: const OutlineInputBorder(
+                            gapPadding: 4,
+                          )),
+                    ),),
+
                 ],
               ),
             ),

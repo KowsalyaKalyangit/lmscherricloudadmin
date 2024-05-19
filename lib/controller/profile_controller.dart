@@ -35,6 +35,7 @@ class ProfileController extends GetxController {
   RxBool updateloading = true.obs;
   List<ProfileUpdateModel> _updateprofiledata = [];
   List<ProfileUpdateModel> get getupdateprofiledata => _updateprofiledata;
+  RxString profilename=''.obs;
 
   Future profileController() async {
     isProfileLoad(true);
@@ -45,10 +46,14 @@ class ProfileController extends GetxController {
         _profileDetails.clear();
        
         _profileDetails.add(response);
+         
+        
         name.text = _profileDetails[0].data[0].firstname.toString();
         email.text = _profileDetails[0].data[0].email.toString();
        mobile.text= _profileDetails[0].data[0].phonenumber.toString();
        lname.text=_profileDetails[0].data[0].lastname.toString();
+       
+     
          
 
         
@@ -82,7 +87,7 @@ class ProfileController extends GetxController {
       );
       if (data != null) {
         _editprofiledata.clear();
-        
+         profilename(_profileDetails[0].data[0].firstname.toString() );
         _editprofiledata.add(data);
         
         editloading(false);

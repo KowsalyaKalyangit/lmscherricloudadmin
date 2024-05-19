@@ -24,7 +24,7 @@ class LeadsProfileModel {
     });
 
     factory LeadsProfileModel.fromJson(Map<String, dynamic> json) => LeadsProfileModel(
-        success: json["success"]??'',
+        success: json["success"],
         status: json["status"],
         message: json["message"],
         totalLeads: json["TotalLeads"],
@@ -53,9 +53,12 @@ class Datum {
     String city;
     String state;
     String country;
+    String countryid;
     String zip;
     String source;
+    String sourceid;
     String status;
+    String statusid;
 
     Datum({
         required this.id,
@@ -70,27 +73,33 @@ class Datum {
         required this.city,
         required this.state,
         required this.country,
+        required this.countryid,
         required this.zip,
         required this.source,
+        required this.sourceid,
         required this.status,
+        required this.statusid,
     });
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        id: json["id"]??'',
-        name: json["name"]??'',
-        position: json["position"]??'',
-        email: json["email"]??'',
-        phonenumber: json["phonenumber"]??'',
-        customer: json["customer"]??"",
-        leadValue: json["lead_value"]??'',
-        description: json["description"]??'',
-        address: json["address"]??'',
-        city: json["city"]??'',
-        state: json["state"]??'',
-        country: json["country"]??'',
-        zip: json["zip"]??'',
-        source: json["source"]??'',
-        status: json["status"]??'',
+        id: json["id"],
+        name: json["name"],
+        position: json["position"],
+        email: json["email"],
+        phonenumber: json["phonenumber"],
+        customer: json["customer"],
+        leadValue: json["lead_value"],
+        description: json["description"],
+        address: json["address"],
+        city: json["city"],
+        state: json["state"],
+        country: json["country"],
+        countryid: json["countryid"],
+        zip: json["zip"],
+        source: json["source"],
+        sourceid: json["sourceid"],
+        status: json["status"],
+        statusid: json["statusid"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -106,8 +115,11 @@ class Datum {
         "city": city,
         "state": state,
         "country": country,
+        "countryid": countryid,
         "zip": zip,
         "source": source,
+        "sourceid": sourceid,
         "status": status,
+        "statusid": statusid,
     };
 }

@@ -12,12 +12,13 @@ class ProposalCreateController extends GetxController {
   List<ProposalCreateModel> get getproposalcreate => _proposalcreateitem;
   RxBool iscreateitemLoad = true.obs;
   ProposalCreateService proposalCreateService = ProposalCreateService();
+  TextEditingController units=TextEditingController();
 
   Future proposalCreateController({
     dashboard,leadid,subject,total,subtotal,taxamount,open_till,date,proposal_to,
     country,zip,state,city,address,email,phone,status,currency,liftpriceid,loadid,speedid,
 travelid,stopid,openingid,controlid,operationid,machineid,hoistwaysize,carsize,delivery,
-erection,power_supply
+erection,power_supply,taxid,units
   }) async {
     iscreateitemLoad(true);
     try {
@@ -27,7 +28,7 @@ erection,power_supply
         state: state,city: city,address: address,email: email,phone: phone,status: status,currency: currency,
         liftpriceid: liftpriceid,loadid: loadid,speedid: speedid,travelid: travelid,stopid: stopid,
         openingid: openingid,controlid: controlid,operationid: operationid,machineid: machineid,hoistwaysize: hoistwaysize,
-        carsize: carsize,delivery: delivery,erection: erection,power_supply: power_supply,
+        carsize: carsize,delivery: delivery,erection: erection,power_supply: power_supply,units: units,taxid: taxid
 
       );
       log(response.toString());

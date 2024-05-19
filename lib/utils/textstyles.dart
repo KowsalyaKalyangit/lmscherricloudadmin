@@ -137,3 +137,9 @@ final listtitlecolor = GoogleFonts.jost(
     textStyle: TextStyle(
         fontSize: 9.00.sp, color: toptitlecolor, fontWeight: FontWeight.w500));
          
+
+         var adminlist=TextStyle(
+          fontSize: 25,
+          color: Colors.amber[900],
+          fontWeight: FontWeight.bold
+         );

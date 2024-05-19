@@ -26,7 +26,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
       if(reminderController.isreminderLoad.value){
 return Center(child: CircularProgressIndicator(),);
       }
-      else if(reminderController.getreminderdetails.isEmpty){
+      else if(reminderController.getreminderdetails[0].data.isEmpty){
         return Center(child: Text('No Data Found'),);
       }
       else{

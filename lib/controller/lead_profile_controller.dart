@@ -59,9 +59,9 @@ var data;
         city.text = _getleadprofile[0].data[0].city;
         state.text = _getleadprofile[0].data[0].state;
         zip.text = _getleadprofile[0].data[0].zip;
-       countryname.value = _getleadprofile[0].data[0].country;
-        status.value = _getleadprofile[0].data[0].status;
-        source.value = _getleadprofile[0].data[0].source;
+       countryname.value = _getleadprofile[0].data[0].countryid.toString();
+        status.value = _getleadprofile[0].data[0].statusid.toString();
+        source.value = _getleadprofile[0].data[0].sourceid.toString();
         log('countrylog');
        log(getleadprofile[0].data[0].country.toString());
      
@@ -85,7 +85,7 @@ var data;
       // }
     try {
       var response = await leadEditProfileService.leadProfileEditService(leadid: leadid,name: name.text,position: position.text,
-        email: email.text,phonenumber: phonenumber.text,value: leadsvalue.text,company: companyName.text,description: des.text,country: countryname.value.toString(),
+        email: email.text,phonenumber: phonenumber.text,value: leadsvalue.text,company: companyName.text,description: des.text,country: countryname.value,
         zip: zip.text,city: city.text,state: state.text,address: address.text,status: status.value.toString(),source: source.value.toString()
 );
       log(response.toString());

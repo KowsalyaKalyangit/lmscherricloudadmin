@@ -27,7 +27,7 @@ class _SocialLoginState extends State<SocialLogin> {
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-                primary: const Color(0xffE8E8E8),
+             //   primary: const Color(0xffE8E8E8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -61,7 +61,7 @@ class _SocialLoginState extends State<SocialLogin> {
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-                primary: const Color(0xffE8E8E8),
+                //primary: const Color(0xffE8E8E8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),

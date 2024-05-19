@@ -6,6 +6,7 @@ import 'package:leadingmanagementsystem/controller/profile_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../allpackages.dart';
+import '../../controller/agreement_controller.dart';
 import '../../controller/login_controller.dart';
 import '../../utils/textstyles.dart';
 import '../login/login_screen.dart';
@@ -22,6 +23,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   LoginController loginController =Get.put(LoginController());
+  AgreementController agreementController=Get.put(AgreementController());
   String ? _version;
   Future<void> _aboutPage(String url) async {
  if (await canLaunch(url)) {
@@ -47,6 +49,7 @@ class _MenuScreenState extends State<MenuScreen> {
   void initState() {
   _getAppVersion();
   ProfileController().profileController();
+  agreementController.agreementController();
     super.initState();
   }
   @override
@@ -62,10 +65,12 @@ class _MenuScreenState extends State<MenuScreen> {
             child: SingleChildScrollView(
           child: Column(
             children: [
+              
               SizedBox(
                 height: 3.00.hp,
               ),
               const ProfileSection(),
+              
               SizedBox(
                 height: 3.00.hp,
               ),
@@ -82,14 +87,55 @@ class _MenuScreenState extends State<MenuScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-
+                     InkWell(
+                onTap: () async{
+                     Uri mail = Uri.parse(agreementController.getagreementdetails[0].data[0].link.toString());
+                      if (await launchUrl(mail)) {
+                          //email app opened
+                      }else{
+                          //
+                      }
+                 
+                },
+                child: Container(
+                  width: 90.00.wp,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color:Color.fromARGB(255, 230, 234, 254),
+                      border:
+                          Border.all(width: 2, color: const Color(0xffF5F5F5))),
+                  padding: const EdgeInsets.only(left: 10, top: 7, bottom: 7),
+                  child: Row(
+                   
+                    children: [
+                       Image.asset('assets/img/agree.png',height: 4.0.hp,),
+                       SizedBox(width: 5.0.wp,),
+                      Container(
+                        width: 60.0.wp,
+                        child: Text(
+                         'AGREEMENT',
+                          style: menuprofiloption,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right:10.0),
+                        child: Icon(Icons.arrow_forward_ios,color: formhintcolor,size: 15,),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+               SizedBox(
+                      height: 1.0.hp,
+                    ),
                     const OptionList(),
-                    const SizedBox(
-                      height: 5,
+                    
+                      SizedBox(
+                      height: 1.0.hp,
                     ),
                      InkWell(
                 onTap: () async{
-                     Uri mail = Uri.parse("https://cherritech.us/proelevators/about.php");
+                     Uri mail = Uri.parse("https://professionalelevators.in/about.php");
                       if (await launchUrl(mail)) {
                           //email app opened
                       }else{
@@ -134,7 +180,7 @@ const SizedBox(
                   print('clickkk');
                   
                   
-                   Uri mail = Uri.parse("https://cherritech.us/proelevators/contactus.php");
+                   Uri mail = Uri.parse("https://professionalelevators.in/contactus.php");
                       if (await launchUrl(mail)) {
                           //email app opened
                       }else{
@@ -322,7 +368,8 @@ const SizedBox(
                            }) ;
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: logocolor,
+                            backgroundColor: logocolor,
+                           
                             elevation: 0,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),

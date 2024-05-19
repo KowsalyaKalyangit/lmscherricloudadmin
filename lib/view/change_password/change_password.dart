@@ -22,6 +22,7 @@ class _CreatenewPasswordState extends State<CreatenewPassword> {
             elevation: 0,
             backgroundColor: appcolor,
             //  / automaticallyImplyLeading: false,
+            
             centerTitle: true,
             leading: Padding(
                 padding: const EdgeInsets.only(left: 10.0),
@@ -29,7 +30,7 @@ class _CreatenewPasswordState extends State<CreatenewPassword> {
                     onTap: () {
                       Get.back();
                     },
-                    child: Icon(Icons.arrow_back))),
+                    child: Icon(Icons.arrow_back,color: screenbackground,))),
             title: Text(
               'Change Password',
               style: toptitleStyle,

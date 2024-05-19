@@ -12,7 +12,7 @@ import 'package:flutter_geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
  
  
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+ 
  
 import 'package:location/location.dart';
  
@@ -30,10 +30,7 @@ class _LoginInputFieldsState extends State<LoginInputFields> {
   
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   bool _isPinnewHidden = true;
-  GoogleMapController? _mapController;
-    Location _location = Location();
-  LatLng _currentLocation = LatLng(0, 0); // Default location
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+ 
   String stAddress = '';
     String latitude = 'waiting...';
   String longitude = 'waiting...';
@@ -177,6 +174,7 @@ class _LoginInputFieldsState extends State<LoginInputFields> {
               ),
               SizedBox(height: 3.00.hp),
               ButtonIconButton(
+               
                 press: () {
                  
                     loginController.loginController(context: context).then((value)  {

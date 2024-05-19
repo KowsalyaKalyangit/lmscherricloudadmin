@@ -1,9 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+ 
 import 'package:leadingmanagementsystem/allpackages.dart';
 import 'package:leadingmanagementsystem/controller/dashboard_controller.dart';
 import 'package:leadingmanagementsystem/controller/notification_controller.dart';
+import 'package:leadingmanagementsystem/utils/admin_button.dart';
 import 'package:leadingmanagementsystem/utils/textstyles.dart';
 import 'package:leadingmanagementsystem/view/home/dashboard/converted_leads.dart';
 import 'package:leadingmanagementsystem/view/home/dashboard/not_converted.dart';
@@ -16,6 +17,7 @@ import 'package:location/location.dart';
 import '../assign/lead_assign.dart';
 import 'dashboard/image_slider.dart';
 import 'dashboard_leads.dart';
+import 'leads_list_view.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -28,10 +30,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var leads=['CONVERTED LEADS','NOT CONVERTED','PENDING','RENEWABLE'];
   var name;
-   GoogleMapController? _mapController;
-    Location _location = Location();
-  LatLng _currentLocation = LatLng(0, 0); 
-    Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+ 
   var menus=[
     ConvertedLeadsPage(),
     
@@ -48,32 +47,32 @@ class _HomePageState extends State<HomePage> {
   // _initLocationService();
     super.initState();
   }
-   Future<void> _initLocationService() async {
-    final _serviceEnabled = await _location.serviceEnabled();
-    if (!_serviceEnabled) {
-      final _serviceRequest = await _location.requestService();
-      if (_serviceRequest != PermissionStatus.granted) {
-        return;
-      }
-    }
+  //  Future<void> _initLocationService() async {
+  //   final _serviceEnabled = await _location.serviceEnabled();
+  //   if (!_serviceEnabled) {
+  //     final _serviceRequest = await _location.requestService();
+  //     if (_serviceRequest != PermissionStatus.granted) {
+  //       return;
+  //     }
+  //   }
 
-    final _permissionStatus = await _location.hasPermission();
-    if (_permissionStatus == PermissionStatus.denied) {
-      final _permissionRequest = await _location.requestPermission();
-      if (_permissionRequest != PermissionStatus.granted) {
-        return;
-      }
-    }
+  //   final _permissionStatus = await _location.hasPermission();
+  //   if (_permissionStatus == PermissionStatus.denied) {
+  //     final _permissionRequest = await _location.requestPermission();
+  //     if (_permissionRequest != PermissionStatus.granted) {
+  //       return;
+  //     }
+  //   }
 
-    _location.onLocationChanged.listen((LocationData locationData) {
+  //   _location.onLocationChanged.listen((LocationData locationData) {
       
-        _currentLocation = LatLng(locationData.latitude ?? 0.0, locationData.longitude ?? 0.0);
-        _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));//setstate removed
+  //       _currentLocation = LatLng(locationData.latitude ?? 0.0, locationData.longitude ?? 0.0);
+  //       _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLocation));//setstate removed
       
-    });
+  //   });
    
     
-  }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,75 +92,7 @@ class _HomePageState extends State<HomePage> {
           children: [Text('Professional Elevators',style:toptitleStyle,),
           Text('Pvt. Ltd',style:toptitleStyle,)],
         ),
-        actions: [
-          InkWell(
-            onTap: () {
-             
-     
-   
-//     showDialog(
-//   context: context,
-//   builder: (_) => new AlertDialog(
-//      insetPadding: EdgeInsets.only(top: 5),
-//           contentPadding: EdgeInsets.zero,
-//   shape: RoundedRectangleBorder(
-//     borderRadius:
-//       BorderRadius.all(
-//         Radius.circular(10.0))),
-//       actions: [
         
-//          Center(child: InkWell(
-//           onTap: () {
-//             setState(() {
-//               print('click');
-//               Get.back();
-//             });
-//           },
-//           child: Container(height: 10.0.hp,width: 40.0.wp,color:Colors.tealAccent,)))],
-//     content: StatefulBuilder(
-//       builder: (context,setstate) {
-//         // Get available height and width of the build area of this widget. Make a choice depending on the size.                              
-        
-
-//         return Container(
-//           height:90.0.hp,
-//           width: 100.0.wp,
-//           child: Padding(
-//               padding: EdgeInsets.only(bottom:2.0.hp),
-//             child: GoogleMap(
-//                    markers: markers.values.toSet(),
-//                   mapType: MapType.normal,
-//                   initialCameraPosition: CameraPosition(
-//             target: _currentLocation,
-//             zoom: 15.0,
-//                   ),
-//                   onMapCreated: (GoogleMapController controller) {
-//             setState(() {
-//               _mapController = controller;
-//             });
-                 
-//                   },
-//                   myLocationEnabled: true,
-//                   myLocationButtonEnabled: true,
-                  
-//                 ),
-//           ),
-//         );
-//       },
-//     ),
-//   )
-// );
-Get.to(MovingPage());
-//Get.to(MapScreen());
-
-  
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.location_on,size: 30,),
-            ),
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Obx((){
@@ -177,7 +108,8 @@ Get.to(MovingPage());
           
             children: [
                      ImageSliderHome(),
-              //Text('Leading Management Software',style: heading,),
+                    
+              
             Text("No of Leads: ${dashboardController.getdashboarddetails[0].totalLeads.toString()}",style: toptitlelogoStyle,),
               SizedBox(height: 2.0.hp,),
             
@@ -252,7 +184,25 @@ SizedBox(height: 1.0.hp,),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
          
-Text('Leads List',style: listtitle,),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    Text('Leads List',style: listtitle,),
+    InkWell(
+      onTap: () {
+         Get.to( LeadsViewList());
+      },
+      child: Container(
+        height: 3.0.hp,
+        width: 20.0.wp,
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(5)
+        ),
+        child: Center(child: Text('view',style: listtitle,)))),
+   
+  ],
+),
 SizedBox(height: 1.0.hp,),
 Container(height: 5.0.hp,width: 100.0.wp,decoration: BoxDecoration(borderRadius: BorderRadius.circular(5),color: appcolor),child: Padding(
   padding: const EdgeInsets.only(left:15,right: 10),

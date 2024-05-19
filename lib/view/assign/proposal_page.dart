@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:leadingmanagementsystem/allpackages.dart';
@@ -5,8 +7,11 @@ import 'package:leadingmanagementsystem/controller/add_proposal_controller/get_p
 import 'package:leadingmanagementsystem/controller/add_proposal_controller/proposal_get_controller.dart';
 
 import '../../controller/add_leads_controller.dart';
+import '../../controller/add_proposal_controller/get_tax_controller.dart';
 import '../../controller/add_proposal_controller/proposal_currency_controller.dart';
+import '../../controller/add_proposal_controller/proposal_delivery_erection_controller.dart';
 import '../../controller/add_proposal_controller/proposal_discount_controller.dart';
+import '../../controller/add_proposal_controller/proposal_edit_controller.dart';
 import '../../controller/add_proposal_controller/proposal_status_controller.dart';
 import '../../controller/add_proposal_controller/related_proposal_controller.dart';
 import '../../utils/signup_button.dart';
@@ -15,8 +20,10 @@ import '../proposal/proposal_add.dart';
 import '../proposal/proposal_nextpage.dart';
 
 class ProposalPage extends StatefulWidget {
-  const ProposalPage({super.key, this.id});
+  const ProposalPage({super.key, this.id,this.leadid});
   final String? id;
+  final String ?leadid;
+   
 
   @override
   State<ProposalPage> createState() => _ProposalPageState();
@@ -40,26 +47,31 @@ class _ProposalPageState extends State<ProposalPage> {
       Get.put(GetProposalRelatedController());
   ProposalStatusController proposalStatusController =
       Get.put(ProposalStatusController());
-  ProposalCurrencyController proposalCurrencyController=Get.put(ProposalCurrencyController());
-  ProposalDiscountController proposalDiscountController=Get.put(ProposalDiscountController());
-  ProposalGetController proposalGetController=Get.put(ProposalGetController());
+  ProposalCurrencyController proposalCurrencyController =
+      Get.put(ProposalCurrencyController());
+  ProposalDiscountController proposalDiscountController =
+      Get.put(ProposalDiscountController());
+  ProposalGetController proposalGetController =
+      Get.put(ProposalGetController());
+        ProposalEditController proposalEditController=Get.put(ProposalEditController());
+       
+
   void initState() {
-    func();
+   func();
     super.initState();
   }
 
   func() {
-    getProposalRelatedController
-        .getproposalrelatedController(leadid: widget.id.toString());
-       
-     
-        addAssignDetailsController.getCountry().then((value) {
-          setState(() {
-             addAssignDetailsController
-                .getprofileUpdatecountry[0].data[0].countryId;
-          });
-         
-     
+   
+   
+   getProposalRelatedController.getproposalrelatedController(
+        leadid: widget.id.toString());
+
+    addAssignDetailsController.getCountry().then((value) {
+      setState(() {
+        addAssignDetailsController
+            .getprofileUpdatecountry[0].data[0].countryName;
+      });
     });
     proposalRelatedController.proposalrelatedController().then(
       (value) {
@@ -73,23 +85,36 @@ class _ProposalPageState extends State<ProposalPage> {
         status = proposalStatusController.getproposalstatus[0].data[0].value;
       });
     });
-    proposalCurrencyController.proposalCurrencyController().then((value){
-      currency=proposalCurrencyController.getproposalCurrency[0].data[0].id;
+    proposalCurrencyController.proposalCurrencyController().then((value) {
+      currency = proposalCurrencyController.getproposalCurrency[0].data[0].id;
     });
     proposalDiscountController.proposalDiscountController().then((value) {
-      discount=proposalDiscountController.getproposalCurrency[0].data[0].value;
+      discount =
+          proposalDiscountController.getproposalCurrency[0].data[0].value;
     });
+    
   }
-   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: InkWell(onTap: () {
-          Get.back();
-        },child: Icon(Icons.arrow_back,color: screenbackground,),),
-        backgroundColor: appcolor,title: Text('Add Proposal',style: toptitleStyle,),),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: InkWell(
+            onTap: () {
+              Get.back();
+            },
+            child: Icon(
+              Icons.arrow_back,
+              color: screenbackground,
+            ),
+          ),
+          backgroundColor: appcolor,
+          title: Text(
+            'Add Proposal',
+            style: toptitleStyle,
+          ),
+        ),
         // floatingActionButton: FloatingActionButton(
         //   backgroundColor: logocolor,
         //   onPressed: (){
@@ -100,20 +125,18 @@ class _ProposalPageState extends State<ProposalPage> {
           if (proposalRelatedController.isproposalreletadLoad.value ||
               // getProposalRelatedController.isgetproposalreletadLoad.value ||
               addAssignDetailsController.isCountryLoading.value ||
-              proposalStatusController.isproposalstatusLoad.value
-        ||proposalCurrencyController.isproposalCurrencyLoad.value||
-        proposalDiscountController.isproposalDiscountLoad.value
-              ) {
+              proposalStatusController.isproposalstatusLoad.value ||
+              proposalCurrencyController.isproposalCurrencyLoad.value ||
+              proposalDiscountController.isproposalDiscountLoad.value) {
             return Center(
               child: CircularProgressIndicator(),
             );
           } else if (proposalRelatedController.getleadstypeDetails.isEmpty ||
-             // getProposalRelatedController.getproposalrelatedDetails.isEmpty ||
+              // getProposalRelatedController.getproposalrelatedDetails.isEmpty ||
               addAssignDetailsController.getprofileUpdatecountry.isEmpty ||
-              proposalStatusController.getproposalstatus.isEmpty||
-              proposalCurrencyController.getproposalCurrency.isEmpty||
-              proposalDiscountController.getproposalCurrency.isEmpty
-              ) {
+              proposalStatusController.getproposalstatus.isEmpty ||
+              proposalCurrencyController.getproposalCurrency.isEmpty ||
+              proposalDiscountController.getproposalCurrency.isEmpty) {
             return Center(
               child: Text('No data Found'),
             );
@@ -215,11 +238,11 @@ class _ProposalPageState extends State<ProposalPage> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                     setState(() {
+                                      setState(() {
                                         relateditem = newValue.toString();
-                                      print('newwvalue');
-                                      print(newValue.toString());
-                                     });
+                                        print('newwvalue');
+                                        print(newValue.toString());
+                                      });
                                     }
                                   });
                                 },
@@ -252,8 +275,7 @@ class _ProposalPageState extends State<ProposalPage> {
                             )),
                       ],
                     ),
-
-                               SizedBox(
+                    SizedBox(
                       height: 1.0.hp,
                     ),
                     Text(
@@ -533,13 +555,17 @@ class _ProposalPageState extends State<ProposalPage> {
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton(
-                            value: countryname,
+                            value: getProposalRelatedController
+                                    .countryaddlead.value.isEmpty
+                                ? null
+                                : getProposalRelatedController
+                                    .countryaddlead.value,
                             style: GoogleFonts.jost(
                                 textStyle: TextStyle(
                                     fontSize: 10.00.sp,
                                     color: forminputcolor,
                                     fontWeight: FontWeight.w500)),
-                            hint: Text('country',
+                            hint: Text('countryy',
                                 style: GoogleFonts.jost(
                                     textStyle: TextStyle(
                                         fontSize: 10.00.sp,
@@ -549,7 +575,8 @@ class _ProposalPageState extends State<ProposalPage> {
                               setState(() {
                                 if (newValue != null) {
                                   setState(() {
-                                    countryname = newValue.toString();
+                                    getProposalRelatedController.countryaddlead
+                                        .value = newValue.toString();
                                     print('newwvalue');
                                     print(newValue.toString());
                                   });
@@ -568,7 +595,7 @@ class _ProposalPageState extends State<ProposalPage> {
                                     .getprofileUpdatecountry[0].data
                                     .map<DropdownMenuItem<String>>((value) {
                                     return DropdownMenuItem<String>(
-                                      value: value.countryId.toString(),
+                                      value: value.countryName.toString(),
                                       child: Container(
                                           margin: const EdgeInsets.only(
                                               left: 0, right: 4),
@@ -941,7 +968,7 @@ class _ProposalPageState extends State<ProposalPage> {
                     SizedBox(
                       height: 1.0.hp,
                     ),
-                     SizedBox(
+                    SizedBox(
                       height: 1.0.hp,
                     ),
                     Row(
@@ -962,160 +989,172 @@ class _ProposalPageState extends State<ProposalPage> {
                     SizedBox(
                       height: 1.0.hp,
                     ),
-                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                              height: 7.00.hp,
-                              width: 40.00.wp,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.0),
-                                 color:   teal1.withOpacity(0.1),
-                                border: Border.all(
-                                  color: const Color(0xFFECE9E9),
-                                  width: MediaQuery.of(context).size.height *
-                                      0.001,
-                                ),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: currency,
-                                  style: GoogleFonts.jost(
-                                      textStyle: TextStyle(
-                                          fontSize: 10.00.sp,
-                                          color: forminputcolor,
-                                          fontWeight: FontWeight.w500)),
-                                  hint: Text('',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                  height: 7.00.hp,
+                                  width: 40.00.wp,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    color: teal1.withOpacity(0.1),
+                                    border: Border.all(
+                                      color: const Color(0xFFECE9E9),
+                                      width:
+                                          MediaQuery.of(context).size.height *
+                                              0.001,
+                                    ),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: currency,
                                       style: GoogleFonts.jost(
                                           textStyle: TextStyle(
                                               fontSize: 10.00.sp,
-                                              color: formhintcolor,
-                                              fontWeight: FontWeight.w500))),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
+                                              color: forminputcolor,
+                                              fontWeight: FontWeight.w500)),
+                                      hint: Text('',
+                                          style: GoogleFonts.jost(
+                                              textStyle: TextStyle(
+                                                  fontSize: 10.00.sp,
+                                                  color: formhintcolor,
+                                                  fontWeight:
+                                                      FontWeight.w500))),
+                                      onChanged: (newValue) {
                                         setState(() {
-                                          currency = newValue.toString();
-                                          print('newwvalue');
-                                          print(newValue.toString());
+                                          if (newValue != null) {
+                                            setState(() {
+                                              currency = newValue.toString();
+                                              print('newwvalue');
+                                              print(newValue.toString());
+                                            });
+                                          }
                                         });
-                                      }
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 20,
-                                    color: const Color(0xFF737070),
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 20,
+                                        color: const Color(0xFF737070),
+                                      ),
+                                      items: proposalCurrencyController
+                                              .getproposalCurrency[0]
+                                              .data
+                                              .isEmpty
+                                          ? []
+                                          : proposalCurrencyController
+                                              .getproposalCurrency[0].data
+                                              .map<DropdownMenuItem<String>>(
+                                                  (value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value.id.toString(),
+                                                child: Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 0, right: 4),
+                                                    child: Text(
+                                                        '${value.symbol.toString()}${value.name.toString()}',
+                                                        style: GoogleFonts.jost(
+                                                            textStyle: TextStyle(
+                                                                fontSize:
+                                                                    10.00.sp,
+                                                                color:
+                                                                    forminputcolor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500)))),
+                                              );
+                                            }).toList(),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                  height: 7.00.hp,
+                                  width: 40.00.wp,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    color: teal1.withOpacity(0.1),
+                                    border: Border.all(
+                                      color: const Color(0xFFECE9E9),
+                                      width:
+                                          MediaQuery.of(context).size.height *
+                                              0.001,
+                                    ),
                                   ),
-                                  items: proposalCurrencyController
-                                          .getproposalCurrency[0].data.isEmpty
-                                      ? []
-                                      : proposalCurrencyController
-                                          .getproposalCurrency[0].data
-                                          .map<DropdownMenuItem<String>>(
-                                              (value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value.id.toString(),
-                                            child: Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 0, right: 4),
-                                                child: Text(
-                                                    '${value.symbol.toString()}${value.name.toString()}',
-                                                    style: GoogleFonts.jost(
-                                                        textStyle: TextStyle(
-                                                            fontSize: 10.00.sp,
-                                                            color:
-                                                                forminputcolor,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500)))),
-                                          );
-                                        }).toList(),
-                                ),
-                              )),
-                        ],
-                      ),
-                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                              height: 7.00.hp,
-                              width: 40.00.wp,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.0),
-                                 color:teal1.withOpacity(0.1),
-                                border: Border.all(
-                                  color: const Color(0xFFECE9E9),
-                                  width: MediaQuery.of(context).size.height *
-                                      0.001,
-                                ),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String>(
-                                  value: discount,
-                                  style: GoogleFonts.jost(
-                                      textStyle: TextStyle(
-                                          fontSize: 10.00.sp,
-                                          color: forminputcolor,
-                                          fontWeight: FontWeight.w500)),
-                                  hint: Text('discount type',
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      value: discount,
                                       style: GoogleFonts.jost(
                                           textStyle: TextStyle(
                                               fontSize: 10.00.sp,
-                                              color: formhintcolor,
-                                              fontWeight: FontWeight.w500))),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      if (newValue != null) {
+                                              color: forminputcolor,
+                                              fontWeight: FontWeight.w500)),
+                                      hint: Text('discount type',
+                                          style: GoogleFonts.jost(
+                                              textStyle: TextStyle(
+                                                  fontSize: 10.00.sp,
+                                                  color: formhintcolor,
+                                                  fontWeight:
+                                                      FontWeight.w500))),
+                                      onChanged: (newValue) {
                                         setState(() {
-                                          discount = newValue.toString();
-                                          print('newwvalue');
-                                          print(newValue.toString());
+                                          if (newValue != null) {
+                                            setState(() {
+                                              discount = newValue.toString();
+                                              print('newwvalue');
+                                              print(newValue.toString());
+                                            });
+                                          }
                                         });
-                                      }
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.arrow_drop_down,
-                                    size: 20,
-                                    color: const Color(0xFF737070),
-                                  ),
-                                  items: proposalDiscountController
-                                          .getproposalCurrency[0].data.isEmpty
-                                      ? []
-                                      : proposalDiscountController
-                                          .getproposalCurrency[0].data
-                                          .map<DropdownMenuItem<String>>(
-                                              (value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value.value.toString(),
-                                            child: Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 0, right: 4),
-                                                child: Text(
-                                                    value.name.toString(),
-                                                    style: GoogleFonts.jost(
-                                                        textStyle: TextStyle(
-                                                            fontSize: 10.00.sp,
-                                                            color:
-                                                                forminputcolor,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500)))),
-                                          );
-                                        }).toList(),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ]),
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 20,
+                                        color: const Color(0xFF737070),
+                                      ),
+                                      items: proposalDiscountController
+                                              .getproposalCurrency[0]
+                                              .data
+                                              .isEmpty
+                                          ? []
+                                          : proposalDiscountController
+                                              .getproposalCurrency[0].data
+                                              .map<DropdownMenuItem<String>>(
+                                                  (value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value.value.toString(),
+                                                child: Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 0, right: 4),
+                                                    child: Text(
+                                                        value.name.toString(),
+                                                        style: GoogleFonts.jost(
+                                                            textStyle: TextStyle(
+                                                                fontSize:
+                                                                    10.00.sp,
+                                                                color:
+                                                                    forminputcolor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500)))),
+                                              );
+                                            }).toList(),
+                                    ),
+                                  )),
+                            ],
+                          ),
+                        ]),
                     SizedBox(
                       height: 2.0.hp,
                     ),
@@ -1124,19 +1163,25 @@ class _ProposalPageState extends State<ProposalPage> {
                       child: ButtonIconButton(
                         press: () async {
                           Get.to(ProposalNextPage(
-                            id: widget.id.toString(),subjectname: getProposalRelatedController.subject.text,
-                            opentillname: getProposalRelatedController.oepntill.text,
+                            id: widget.id.toString(),
+                            subjectname:
+                                getProposalRelatedController.subject.text,
+                            opentillname:
+                                getProposalRelatedController.oepntill.text,
                             datename: getProposalRelatedController.date.text,
-                            proposaltoname: getProposalRelatedController.toname.text,
-                            countryname: getProposalRelatedController.country.text,
+                            proposaltoname:
+                                getProposalRelatedController.toname.text,
+                            countryname: getProposalRelatedController
+                                .countryaddlead.value,
                             zipname: getProposalRelatedController.zip.text,
                             statename: getProposalRelatedController.state.text,
                             cityname: getProposalRelatedController.city.text,
-                            addressname: getProposalRelatedController.address.text,
+                            addressname:
+                                getProposalRelatedController.address.text,
                             emailname: getProposalRelatedController.tomail.text,
                             phonename: getProposalRelatedController.phone.text,
-                            status: status,currencyname: currency,
-
+                            status: status,
+                            currencyname: currency,
                           ));
                         },
                         bgcolor: appcolor,

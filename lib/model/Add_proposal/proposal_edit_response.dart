@@ -90,10 +90,16 @@ class Datum {
     String entrances;
     String dooroperation;
     String delivery;
+    String deliveryid;
     String erection;
+    String erectionid;
     String powerSupply;
+    String units;
     String subtotal;
     String total;
+    String taxid;
+    String taxname;
+    String totaltax;
 
     Datum({
         required this.proposalid,
@@ -149,10 +155,16 @@ class Datum {
         required this.entrances,
         required this.dooroperation,
         required this.delivery,
+        required this.deliveryid,
         required this.erection,
+        required this.erectionid,
         required this.powerSupply,
+        required this.units,
         required this.subtotal,
         required this.total,
+          required this.taxid,
+        required this.taxname,
+          required this.totaltax,
          
     });
 
@@ -210,10 +222,16 @@ class Datum {
         entrances: json["entrances"],
         dooroperation: json["dooroperation"],
         delivery: json["delivery"],
+          deliveryid: json["deliveryid"],
         erection: json["erection"],
+          erectionid: json["erectionid"],
         powerSupply: json["power_supply"],
+         units: json["units"],
         subtotal: json["subtotal"],
         total: json["total"],
+         taxid: json["taxid"],
+        taxname: json["taxname"],
+         totaltax: json["totaltax"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -270,9 +288,15 @@ class Datum {
         "entrances": entrances,
         "dooroperation": dooroperation,
         "delivery": delivery,
+          "deliveryid": deliveryid,
         "erection": erection,
+         "erectionid": erectionid,
         "power_supply": powerSupply,
+         "units": units,
         "subtotal": subtotal,
         "total": total,
+          "taxid": taxid,
+        "taxname": taxname,
+         "totaltax": totaltax,
     };
 }

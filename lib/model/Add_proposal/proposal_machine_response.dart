@@ -50,8 +50,8 @@ class Datum {
     });
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        machineid: json["machineid"],
-        name: json["name"],
+        machineid: json["machineid"]??'',
+        name: json["name"]??'',
     );
 
     Map<String, dynamic> toJson() => {

@@ -15,7 +15,7 @@
 
 
     <application
-        android:label="LMS"
+        android:label="Lms Admin"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
          android:requestLegacyExternalStorage="true">
@@ -52,8 +52,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCkWCnHlQKHF1-KV_rNdDUP4VCTAnUsbnc"/>
+            <!-- <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCkWCnHlQKHF1-KV_rNdDUP4VCTAnUsbnc"/> -->
 
             
                 

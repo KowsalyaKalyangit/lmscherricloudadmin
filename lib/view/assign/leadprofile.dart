@@ -40,21 +40,22 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
    
    
     leadProfileController.leadprofileController();
+    log('kkkkkkkk');
      log(leadProfileController.countryname.value.toString());
     addAssignDetailsController.getCountry().then((value) {
       setState(() {
        addAssignDetailsController
-            .getprofileUpdatecountry[0].data[0].countryName; 
+            .getprofileUpdatecountry[0].data[0].countryId.toString(); 
       });
     });
     addAssignDetailsController.getStatus().then((value) {
     setState(() {
-       addAssignDetailsController.getstatusLead[0].data[0].name;
+       addAssignDetailsController.getstatusLead[0].data[0].id;
     });
     });
     addAssignDetailsController.getSourceLeads().then((value) {
        setState(() {
-         addAssignDetailsController.getSourceLead[0].data[0].name;
+         addAssignDetailsController.getSourceLead[0].data[0].id;
        });
     });
   }
@@ -66,17 +67,17 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
-        if (leadProfileController.isLeadsProfileLoad.value ||
-            addAssignDetailsController.isCountryLoading.value ||
-            addAssignDetailsController.isStatusLoading.value ||
-            addAssignDetailsController.isSourceLoading.value) {
+        if (leadProfileController.isLeadsProfileLoad.value ||addAssignDetailsController.isSourceLoading.value
+             ) {
           return Center(
             child: CircularProgressIndicator(),
           );
-        } else if (leadProfileController.getleadprofile.isEmpty ||
+        } else if (leadProfileController.getleadprofile[0].data.isEmpty ||
             addAssignDetailsController.getprofileUpdatecountry.isEmpty ||
             addAssignDetailsController.getstatusLead.isEmpty ||
-            addAssignDetailsController.getstatusLead.isEmpty) {
+            addAssignDetailsController.getstatusLead.isEmpty||
+            addAssignDetailsController.getSourceLead.isEmpty
+            ) {
           return Center(
             child: Text('No data found'),
           );
@@ -599,7 +600,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                   SizedBox(
                     height: 1.0.hp,
                   ),
-         leadProfileController.countryname.value==null|| leadProfileController.countryname.value.isEmpty|| leadProfileController.countryname.value==''?Container():          Row(
+             Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
@@ -615,7 +616,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value:  leadProfileController.countryname.value,
+                              value:leadProfileController.countryname.value.isEmpty&&leadProfileController.countryname.value==''?null:leadProfileController.countryname.value,
                               style: GoogleFonts.jost(
                                   textStyle: TextStyle(
                                       fontSize: 10.00.sp,
@@ -653,7 +654,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                                       .getprofileUpdatecountry[0].data
                                       .map<DropdownMenuItem<String>>((value) {
                                       return DropdownMenuItem<String>(
-                                        value: value.countryName,
+                                        value: value.countryId,
                                         child: Container(
                                             margin: const EdgeInsets.only(
                                                 left: 0, right: 4),
@@ -747,7 +748,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value: leadProfileController.status.value,
+                              value: leadProfileController.status.value.isEmpty?null:leadProfileController.status.value.toString(),
                               style: GoogleFonts.jost(
                                   textStyle: TextStyle(
                                       fontSize: 10.00.sp,
@@ -780,7 +781,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                                       .getstatusLead[0].data
                                       .map<DropdownMenuItem<String>>((value) {
                                       return DropdownMenuItem<String>(
-                                        value: value.name.toString(),
+                                        value: value.id.toString(),
                                         child: Container(
                                             margin: const EdgeInsets.only(
                                                 left: 0, right: 4),
@@ -826,7 +827,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              value: leadProfileController.source.value,
+                              value: leadProfileController.source.value.isEmpty?null:leadProfileController.source.value,
                               style: GoogleFonts.jost(
                                   textStyle: TextStyle(
                                       fontSize: 10.00.sp,
@@ -859,7 +860,7 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                                       .getSourceLead[0].data
                                       .map<DropdownMenuItem<String>>((value) {
                                       return DropdownMenuItem<String>(
-                                        value: value.name.toString(),
+                                        value: value.id.toString(),
                                         child: Container(
                                             margin: const EdgeInsets.only(
                                                 left: 0, right: 4),
@@ -881,7 +882,9 @@ class _LeadProfilePageState extends State<LeadProfilePage> {
                     child: ButtonIconButton(
                       press: () async {
               setState(() {
-                         leadProfileController.leadprofileEditController(leadid: widget.id.toString());
+                         leadProfileController.leadprofileEditController(
+                          
+                          leadid: widget.id.toString(),);
               });
                       },
                       bgcolor: appcolor,

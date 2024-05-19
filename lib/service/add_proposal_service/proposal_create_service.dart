@@ -12,7 +12,7 @@ class ProposalCreateService {
     { leadid,subject,total,subtotal,taxamount,open_till,date,proposal_to,
     country,zip,state,city,address,email,phone,status,currency,liftpriceid,loadid,speedid,
 travelid,stopid,openingid,controlid,operationid,machineid,hoistwaysize,carsize,delivery,
-erection,power_supply
+erection,power_supply,units,taxid
     
     }
   ) async {
@@ -56,7 +56,9 @@ erection,power_supply
     "carsize":carsize??'',
     "delivery":delivery??"",
     "erection":erection,
-    "power_supply": power_supply??''
+    "power_supply": power_supply??'',
+    "units":units??'',
+    "taxid":taxid??''
 
       };
       var jsonencode = jsonEncode(data);

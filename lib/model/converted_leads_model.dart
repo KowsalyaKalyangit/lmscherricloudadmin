@@ -47,6 +47,8 @@ class Datum {
     String phonenumber;
     String company;
     String status;
+    String assignedby;
+    String profileimg;
 
     Datum({
         required this.id,
@@ -55,6 +57,8 @@ class Datum {
         required this.phonenumber,
         required this.company,
         required this.status,
+        required this.assignedby,
+        required this.profileimg,
     });
 
     factory Datum.fromJson(Map<String, dynamic> json) => Datum(
@@ -64,6 +68,8 @@ class Datum {
         phonenumber: json["phonenumber"],
         company: json["company"],
         status: json["status"],
+        assignedby: json["assignedby"],
+        profileimg: json["profileimg"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -73,5 +79,7 @@ class Datum {
         "phonenumber": phonenumber,
         "company": company,
         "status": status,
+        "assignedby": assignedby,
+        "profileimg": profileimg,
     };
 }

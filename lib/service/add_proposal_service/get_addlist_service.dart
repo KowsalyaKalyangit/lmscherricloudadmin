@@ -3,8 +3,7 @@ import 'package:http/http.dart' as http;
 
 import '../../allpackages.dart';
 import '../../model/Add_proposal/get_addlist_item_response.dart';
-import '../../model/Add_proposal/get_proposal_related_model.dart';
-import '../../model/Add_proposal/proposal_related_model.dart';
+ 
 
 class GetAddListItemService {
   Future getAddListItemService({liftid}) async {

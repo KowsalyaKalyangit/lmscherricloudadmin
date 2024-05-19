@@ -12,12 +12,14 @@ import 'package:leadingmanagementsystem/service/add_proposal_service/proposal_sp
 import '../../model/Add_proposal/proposal_load_response.dart';
 import '../../model/Add_proposal/proposal_speed_amount_response.dart';
 import '../../utils/common_variable.dart';
+import 'proposal_edit_controller.dart';
  
 class ProposalSpeedAmtController extends GetxController{
   List<ProposalSpeedAmountModel> _proposalspeedamt=[];
   List<ProposalSpeedAmountModel> get getproposalspeedamt=>_proposalspeedamt;
    RxBool isproposaspeedamtLoad = true.obs;
    ProposalSpeedAmountService proposalSpeedAmountService=ProposalSpeedAmountService();
+    ProposalEditController proposalEditController=Get.put(ProposalEditController());
    var speeddata;
   Future proposalSpeedAmtController({speedid,total,subtotal}) async {
     isproposaspeedamtLoad(true);
@@ -28,6 +30,9 @@ class ProposalSpeedAmtController extends GetxController{
         _proposalspeedamt.clear();
         print('res---------------$response');
         _proposalspeedamt.add(response);
+        log(_proposalspeedamt[0].data[0].subtotal.toString());
+        proposalEditController.subtotal(_proposalspeedamt.first.data.first.subtotal.toString());
+           proposalEditController.total(_proposalspeedamt.first.data.first.total.toString());
        commonVariable.commonapidata.value=_proposalspeedamt[0].data[0].subtotal.toString();
          commonVariable.commontotal.value=_proposalspeedamt[0].data[0].total.toString();
            
